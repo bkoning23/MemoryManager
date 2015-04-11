@@ -14,13 +14,16 @@ class stats:
 
 class process:
 	def __init__(self, id):
-		self.refcount = 1
+		self.refcount = 0
+		self.pagefault = 0
 		self.pages = []
 		self.pid = id
 
-	def add(self, page):
-		self.pages.append(page)
-		self.refcount += 1
+	def add(self, page, frame):
+		for i in self.pages:
+			if(i[0] == page):
+				self.pages.remove(i)
+		self.pages.append((page, frame))
 
 	def getpages(self):
 		return self.pages
@@ -31,8 +34,24 @@ class process:
 	def getrefcount(self):
 		return self.refcount
 
+	def getfaultcount(self):
+		return self.pagefault
+
 	def getall(self):
 		return (self.pages, self.refcount, self.pid)
+
+	def incref(self):
+		self.refcount += 1
+
+	def incfault(self):
+		self.pagefault += 1
+
+	def getpagetable(self):
+		s = ("Process " + self.pid + ":\n")
+		s += ("Page\tFrame\n")
+		for x in range(len(self.pages)):
+			s += (str(self.pages[x][0]) + "\t" + str(self.pages[x][1]) + "\n")
+		return s
 
 	def __str__(self):
 		return str(self.refcount)
@@ -70,6 +89,15 @@ class mainmemory:
 		self.size = total
 		self.e = None
 
+	def __str__(self):
+		s = ("Frame #\t ProcID\t Page#\n")
+		for x in range(len(self.memory)):
+			curr = self.memory[x]
+			pid = curr[0]
+			page = curr[1]
+			s += (str(x) + "\t" + str(pid) + "\t" + str(page) + "\n")
+		return s
+
 	def getmem(self):
 		return self.memory
 
@@ -82,6 +110,8 @@ class mainmemory:
 		except ValueError, ex:
 			self. e = ex
 
+	#Puts the index of the (pid, page) tuple in memory as the 
+	#most recently used.
 	def topofstack(self, pid, page):
 		index = self.getindex(pid, page)
 		if not self.e:
@@ -95,6 +125,7 @@ class mainmemory:
 		if(len(self.memory) >= self.size):
 			raise self.MemError("Out of Memory")
 		self.memory.append((pid, page))
+		return self.memory.index((pid, page))
 
 	def getstack(self):
 		return self.refstack
@@ -105,7 +136,8 @@ class mainmemory:
 		index = self.refstack.pop()
 		#Removes the frame at the specified index and replaces it
 		self.memory.pop(index)
-		self.memory.insert(index, (pid, page))	
+		self.memory.insert(index, (pid, page))
+		return index
 
 
 
