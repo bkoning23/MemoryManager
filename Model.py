@@ -12,7 +12,7 @@ class stats:
 
 class process:
 	def __init__(self, id):
-		self.refcount = 0
+		self.refcount = 1
 		self.pages = []
 		self.pid = id
 
@@ -23,9 +23,15 @@ class process:
 	def getpages(self):
 		return self.pages
 
+	def getpagecount(self):
+		return len(set(self.pages))
+
 	def getrefcount(self):
 		return self.refcount
 
+	def getall(self):
+		return (self.pages, self.refcount, self.pid)
+
 	def __str__(self):
-		return self.pages
+		return str(self.refcount)
 
