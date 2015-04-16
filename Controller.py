@@ -5,6 +5,16 @@ View.py
 This file brings the model and view together by updating
 the models and giving information to the view so that
 it can update itself.
+
+This is the main program, the entire program runs as 
+python Controller.py <inputfile>
+
+The inputfile contains memory references of the format:
+P1: 000000
+P2: 000001
+
+Process, then the page that process wants to access.
+
 """
 
 import sys, getopt
