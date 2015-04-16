@@ -1,4 +1,11 @@
-__author__ = 'Brendan Koning'
+"""
+Brendan Koning
+4/16/2015
+Model.py
+This file holds all of the information pertaining to
+the models used in the program and methods to manipulate 
+those models.
+"""
 
 from collections import deque
 

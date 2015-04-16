@@ -1,10 +1,4 @@
-"""
-Brendan Koning
-4/16/2015
-View.py
-This file holds all of the information pertaining to
-creating the GUI and adding listeners and actions.
-"""
+__author__ = 'Brendan Koning'
 
 import sys
 from Tkinter import *

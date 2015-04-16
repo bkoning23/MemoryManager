@@ -1,4 +1,11 @@
-__author__ = 'Brendan Koning'
+"""
+Brendan Koning
+4/16/2015
+View.py
+This file brings the model and view together by updating
+the models and giving information to the view so that
+it can update itself.
+"""
 
 import sys, getopt
 from Model import stats, process, mainmemory
@@ -36,6 +43,7 @@ class controller():
 	def getprocess(self, pid):
 		return self.pcb[[x[0] for x in self.pcb].index(pid)][1]
 
+	#Checks if the requested page is in memory, and faults if it is not
 	def inmemory(self, pid, page):
 		process = self.getprocess(pid)
 		process.incref()
@@ -46,24 +54,29 @@ class controller():
 				return (index + 1) * -1
 		#Page not in memory
 		else:
+			#Used to count faults for each process
 			process.incfault()
 			try:	
+				#Indicates page was not in memory
 				self.error = mainmemory.MemError
 				index = self.memory.addtomemory(pid, page)
 				print("Adding Process " + str(pid) + " Page " + str(page) + " to Frame " + str(index))
 			except mainmemory.MemError:
+				#Page is not in memory but memory is full
 				self.error = mainmemory.MemError
 				index = self.memory.lru(pid, page)
 				print("Page Fault: Replacing Frame " + str(index) + " with Process " + str(pid) + " Page " + str(page))
 			process.add(page, index)
 			return index + 1
 
+	#Actions to perform when pressing the "Next" button
 	def nextstep(self):
 		if(self.error != RuntimeError):
 			line = self.file.readline()
 			try:
 				pid = line.split(":")[0][1]
 			except IndexError:
+				#This is when the program has ran to completion
 				self.error = RuntimeError
 				self.printinfo()
 				self.view.pagetable()
