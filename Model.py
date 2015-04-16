@@ -1,4 +1,4 @@
-__author__ = 'Brendan'
+__author__ = 'Brendan Koning'
 
 from collections import deque
 
@@ -16,6 +16,7 @@ class process:
 	def __init__(self, id):
 		self.refcount = 0
 		self.pagefault = 0
+		#Page Table is of the form (page, frame)
 		self.pages = []
 		self.pid = id
 
@@ -37,6 +38,9 @@ class process:
 	def getfaultcount(self):
 		return self.pagefault
 
+	def getpid(self):
+		return self.pid
+
 	def getall(self):
 		return (self.pages, self.refcount, self.pid)
 
@@ -52,27 +56,6 @@ class process:
 		for x in range(len(self.pages)):
 			s += (str(self.pages[x][0]) + "\t" + str(self.pages[x][1]) + "\n")
 		return s
-
-	def __str__(self):
-		return str(self.refcount)
-
-class freeframelist:
-	def __init__(self, size):
-		self.freeframes = range(size)
-
-	def getfree(self):
-		return self.freeframes
-
-	def getfreesize(self):
-		return len(self.freeframes)
-
-	def isempty(self):
-		if not self.freeframes:
-			return True
-		return False
-
-	def allocate(self):
-		return self.freeframes.pop()
 
 class mainmemory:
 	class MemError(Exception):
